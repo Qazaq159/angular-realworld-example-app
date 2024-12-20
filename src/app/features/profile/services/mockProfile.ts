@@ -26,7 +26,7 @@ export let zelenskyProfile: Profile = {
 };
 
 export let currentUser: User = {
-  email: "yerkebulan.zhaksylykov@gmail.com",
+  email: "yerke@gmail.com",
   token: "JWT:256:sdsadsad123213213",
   username: currentProfile.username,
   bio: currentProfile.bio,
