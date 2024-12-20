@@ -1,18 +1,28 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+import { of } from "rxjs";
 import { map, shareReplay } from "rxjs/operators";
 import { Profile } from "../models/profile.model";
 import { HttpClient } from "@angular/common/http";
+import {
+  currentProfile,
+  joulaniProfile,
+  zelenskyProfile,
+} from "../services/mockProfile";
 
 @Injectable({ providedIn: "root" })
 export class ProfileService {
   constructor(private readonly http: HttpClient) {}
 
   get(username: string): Observable<Profile> {
-    return this.http.get<{ profile: Profile }>("/profiles/" + username).pipe(
-      map((data: { profile: Profile }) => data.profile),
-      shareReplay(1),
-    );
+    if (username === currentProfile.username) return of(currentProfile);
+    else if (username === joulaniProfile.username) return of(joulaniProfile);
+    else if (username === zelenskyProfile.username) return of(zelenskyProfile);
+    else
+      return this.http.get<{ profile: Profile }>("/profiles/" + username).pipe(
+        map((data: { profile: Profile }) => data.profile),
+        shareReplay(1),
+      );
   }
 
   follow(username: string): Observable<Profile> {
