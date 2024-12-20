@@ -1,11 +1,17 @@
-import { Injectable } from "@angular/core";
-import { Observable, BehaviorSubject } from "rxjs";
-
+import { createEnvironmentInjector, Injectable } from "@angular/core";
+import { Observable, BehaviorSubject, of } from "rxjs";
 import { JwtService } from "./jwt.service";
 import { map, distinctUntilChanged, tap, shareReplay } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
 import { User } from "../user.model";
 import { Router } from "@angular/router";
+import {
+  currentUser,
+  zelenskyProfile,
+  joulaniProfile,
+  zelenskyUser,
+  joulaniUser,
+} from "../../../features/profile/services/mockProfile";
 
 @Injectable({ providedIn: "root" })
 export class UserService {
@@ -22,13 +28,34 @@ export class UserService {
     private readonly router: Router,
   ) {}
 
-  login(credentials: { // Task 2
+  login(credentials: {
+    // Task 2
     email: string;
     password: string;
   }): Observable<{ user: User }> {
-    return this.http
-      .post<{ user: User }>("/users/login", { user: credentials })
-      .pipe(tap(({ user }) => this.setAuth(user)));
+    let mockResponseUser = {
+      user: {
+        email: "",
+        token: "",
+        username: "",
+        bio: "",
+        image: "",
+      },
+    };
+
+    if (credentials.email === currentUser.email)
+      mockResponseUser.user = currentUser;
+    else if (credentials.email === zelenskyUser.email)
+      mockResponseUser.user = zelenskyUser;
+    else if (credentials.email === joulaniUser.email)
+      mockResponseUser.user = joulaniUser;
+
+    if (!mockResponseUser.user.email)
+      return this.http
+        .post<{ user: User }>("/users/login", { user: credentials })
+        .pipe(tap(({ user }) => this.setAuth(user)));
+
+    return of(mockResponseUser).pipe(tap(({ user }) => this.setAuth(user)));
   }
 
   register(credentials: {

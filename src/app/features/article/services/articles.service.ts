@@ -1,9 +1,10 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { ArticleListConfig } from "../models/article-list-config.model";
 import { Article } from "../models/article.model";
+import { articles } from "./mockDatas";
 
 @Injectable({ providedIn: "root" })
 export class ArticlesService {
@@ -20,10 +21,17 @@ export class ArticlesService {
       params = params.set(key, config.filters[key]);
     });
 
-    return this.http.get<{ articles: Article[]; articlesCount: number }>(
-      "/articles" + (config.type === "feed" ? "/feed" : ""),
-      { params },
-    );
+    let content = {
+      articles: articles,
+      articlesCount: articles.length,
+    };
+
+    return of(content);
+
+    // return this.http.get<{ articles: Article[]; articlesCount: number }>(
+    //   "/articles" + (config.type === "feed" ? "/feed" : ""),
+    //   { params },
+    // );
   }
 
   get(slug: string): Observable<Article> {
